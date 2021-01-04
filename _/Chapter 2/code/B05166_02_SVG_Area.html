@@ -1,0 +1,46 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>SVG Area</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+
+    <style>
+      svg {
+        border: 1px dashed black;
+        background-color: #efefef;
+      }
+      path {
+        fill: rgba(255, 0, 0, 0.3);
+        stroke: red;
+        stroke-width: 2;
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <h1>Area with Interpolation</h1>
+    <svg id="ex01" width="800" height="400">
+
+    </svg>
+
+    <script>
+      var $svg = d3.select('#ex01');
+
+      var data = [
+        [100, 100, 100], [200, 350, 200], [300, 50, 50],
+        [400, 200, 350], [500, 250, 375], [600, 40, 100], [700, 100, 100]
+      ];
+
+      var area = d3.svg.area()
+        .x(function(d, i) { return d[0]; })
+        .y0(function(d, i) { return d[1]; })
+        .y1(function(d, i) { return d[2]; })
+        .interpolate('cardinal');
+
+      $svg.datum(data)
+        .append("path")
+        .attr("d", area);
+    </script>
+  </body>
+</html>

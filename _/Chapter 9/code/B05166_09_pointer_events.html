@@ -1,0 +1,39 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Hover vs. Focus</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <style>
+      circle {
+        fill: rgba(0,0,0,0.125);
+        stroke: black;
+      }
+
+      circle.focus:hover, circle.focus:focus {
+        fill: rgba(0,0,255,0.5);
+      }
+
+      .all-events {
+        pointer-events: auto;
+      }
+
+      .no-events {
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+  <svg class="drawing">
+    <circle class="focus" r="35.9" cx="50" cy="75" />
+    <circle class="all-events" r="35.9" cx="50" cy="50" />
+
+    <circle class="focus" r="35.9" cx="150" cy="75" />
+    <circle class="no-events" r="35.9" cx="150" cy="50" />
+  </svg>
+  <script>
+  $canvas = d3.select('.drawing')
+    .attr('width', document.body.clientWidth)
+    .attr('height', document.body.clientHeight);
+  </script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Reduce</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+  </head>
+  <body>
+    <script>
+    function sum(a, b){
+      return a + b;
+    }
+
+    var data = [
+      {x: 1, inner: [5, 1, 1]},
+      {x: 2, inner: [2, 1, 1]},
+      {x: 3, inner: [5, 3, 2]},
+      {x: 4, inner: [3, 5, 4]},
+      {x: 5, inner: [4, 1, 2]},
+      {x: 6, inner: [5, 3, 1]}
+    ];
+
+    var reduced = data.map(function(d, i){
+      return {
+        x: d.x, y: d.inner.reduce(sum, 0)
+      }
+    });
+
+      console.log(reduced);
+
+      var data = [
+        {x: 1, inner: [{count: 5}, {count: 1}, {count: 1}]},
+        {x: 2, inner: [{count: 2}, {count: 1}, {count: 1}]},
+        {x: 3, inner: [{count: 5}, {count: 3}, {count: 2}]},
+        {x: 4, inner: [{count: 3}, {count: 5}, {count: 4}]},
+        {x: 5, inner: [{count: 4}, {count: 1}, {count: 2}]},
+        {x: 6, inner: [{count: 5}, {count: 3}, {count: 1}]}
+      ];
+
+      var reduced = data.map(function(d, i){
+        return {
+          x: d.x, y: d.inner
+            .map(function(d){
+              return d.count;
+            }).reduce(sum, 0)
+        }
+      });
+
+      console.log(reduced);
+
+    </script
+
+    <script>
+      var data = [
+        {x: 1, inner: {count: 5}},
+        {x: 2, inner: {count: 4}},
+        {x: 3, inner: {count: 1}},
+        {x: 4, inner: {count: 8}},
+        {x: 5, inner: {count: 3}},
+        {x: 6, inner: {count: 5}}
+      ];
+
+      var extent = d3.extent(data, function(d, i){
+        return d.x;
+      });
+
+    </script>
+  </body>
+</html>

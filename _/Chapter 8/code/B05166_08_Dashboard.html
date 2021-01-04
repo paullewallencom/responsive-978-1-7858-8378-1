@@ -1,0 +1,115 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <script src="bower_components/topojson/topojson.js"></script>
+    <script src="bower_components/queue-async/queue.min.js"></script>
+    <script src="app.js"></script>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <style>
+      html, body{
+        position: realtive;
+      }
+      .barchart {
+        position: relative;
+      }
+      .barchart svg {
+        width: 100%;
+        position: relative;
+      }
+      .barchart text {
+        font-size: 0.9rem;
+      }
+      .barchart path, .barchart line, .barchart text {
+        vector-effect: non-scaling-stroke;
+      }
+      .axis path, .axis line {
+        fill: none;
+        stroke: #999;
+        shape-rendering: crispEdges;
+      }
+      .data rect {
+        stroke: red;
+        fill: rgba(255, 0, 0, 0.5);
+      }
+      .counties {
+        fill: none;
+      }
+      .states {
+        fill: none;
+        stroke: #fff;
+        stroke-linejoin: round;
+      }
+    </style>
+  </head>
+  <body>
+
+  <div class="container">
+      <div class="row">
+      <div class="col-md-8">
+        <div class="choropleth"
+           data-url="data/unemployment.csv"
+           data-map-url='data/us.json'
+           data-color-start='#FF7948'
+           data-color-end='#B93200'>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <h2>My Dashboard</h2>
+        <p>This is a simple dashboard</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 col-md-4">
+        <div class="barchart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-groupby='symbol'>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-4">
+        <div class="barchart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-groupby='symbol'>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-4">
+        <div class="barchart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-groupby='symbol'>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="barchart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-groupby='symbol'>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="barchart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-groupby='symbol'>
+        </div>
+      </div>
+    </div>
+    </div>
+    <script>
+
+      barchart('.barchart');
+      choropleth('.choropleth');
+
+    </script>
+  </body>
+</html>

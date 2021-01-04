@@ -1,0 +1,28 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Map</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+  </head>
+  <body>
+    <script>
+      var data = [
+        {x: 1, inner: {count: 5}},
+        {x: 2, inner: {count: 4}},
+        {x: 3, inner: {count: 1}},
+        {x: 4, inner: {count: 8}},
+        {x: 5, inner: {count: 3}},
+        {x: 6, inner: {count: 5}}
+      ];
+
+      var mapped = data.map(function(d, i){
+        return {
+          x: d.x, y: d.inner.count
+        }
+      });
+
+      console.log(mapped);
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,272 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Interaction Target</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <style>
+      html, body{
+        position: realtive;
+      }
+      .chart {
+        margin-top: 2em;
+        position: relative;
+      }
+      .chart svg {
+        width: 100%;
+        position: relative;
+      }
+      .chart text {
+        font-size: 0.9rem;
+      }
+      .chart path, .chart line, .chart text {
+        vector-effect: non-scaling-stroke;
+      }
+      .axis path, .axis line {
+        fill: none;
+        stroke: #999;
+        shape-rendering: crispEdges;
+      }
+      .data rect {
+        stroke: red;
+        fill: rgba(255, 0, 0, 0.5);
+      }
+      .active {
+        stroke: black;
+        stroke-width: 1.5px;
+      }
+    </style>
+  </head>
+  <body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h2>My Dashboard</h2>
+        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet.</p>
+      </div>
+      <div class="col-md-8">
+        <div class="chart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-x-filter='2008'
+           data-group-filter='MSFT'>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+
+      scatterplot('.chart');
+
+      function scatterplot(selector) {
+        // Select all charts
+        var $charts = d3.selectAll(selector);
+        var aspectRatio = 16.0 / 9.0;
+
+        flatten($charts).forEach(function(chart, i){
+          var atts = getAttributes(chart);
+          var url = atts['data-url'];
+          var colors = d3.scale.category10();
+          var $svg = d3.select(chart).append('svg');
+          var $axesGroup = $svg.append('g').attr('class', 'axis-container');
+          var $dataGroup = $svg.append('g').attr('class', 'data-container');
+          var xKey = function(d){ return d.x; };
+          var yKey = function(d){ return d.y; };
+          var groupKey = function(d){ return d.group; };
+          var formatter = d3.time.format('%b %Y');
+          var padding = 30;
+
+          d3.csv(url, function(results){
+
+            var xScale, yScale;
+
+            // Clean the data
+            var flatData = results.map(function(d){
+              d.xRaw = d[atts['data-x']];
+              d.x = formatter.parse(d[atts['data-x']]);
+              d.y = parseFloat(d[atts['data-y']]);
+              d.group = d.symbol;
+              d.active = false;
+              return d;
+            });
+
+            if (atts['data-x-filter']) {
+             flatData = flatData.filter(function(d){
+                return d.xRaw.search(atts['data-x-filter']) >= 0;
+              });
+            }
+
+            if (atts['data-group-filter']) {
+             flatData = flatData.filter(function(d){
+                return d.group.search(atts['data-group-filter']) >= 0;
+              });
+            }
+
+            // Redraw the chart
+            redraw();
+
+            window.addEventListener('resize', function(event){
+              redraw();
+            });
+
+            function redraw() {
+              var width = chart.clientWidth;
+              var height = width / aspectRatio;
+              var numDataPoints = flatData.length;
+
+              // Set a fixed height
+              $svg.attr('height', height);
+
+              xScale = d3.time.scale()
+                .domain(d3.extent(flatData.map(xKey)))
+                .range([padding, width - 2*padding]);
+
+              yScale = d3.scale.linear()
+                .domain([15, d3.max(flatData, yKey)])
+                .range([height - 2*padding, padding]);
+
+              var xAxis = d3.svg.axis()
+                .scale(xScale)
+                .ticks(d3.time.month);
+
+              var yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient('left');
+
+              var $$xAxis = $axesGroup.selectAll('.x.axis')
+                .data([true]);
+
+              $$xAxis.enter().append('g')
+                .attr('class', 'x axis');
+
+              $$xAxis.attr('transform', 'translate(0, ' + (height - 2*padding) + ')')
+                .call(xAxis);
+
+              var $$yAxis = $axesGroup.selectAll('.y.axis')
+                .data([true]);
+
+              $$yAxis.enter().append('g')
+                .attr('class', 'y axis');
+
+              $$yAxis.attr('transform', 'translate(' + padding + ')')
+                .call(yAxis);
+
+              var $$circles = $dataGroup.selectAll('circle.data')
+                .data(flatData);
+
+              $$circles.enter()
+                .append('circle')
+                .attr('class', 'data');
+
+              $$circles
+                .classed('active', function(d) { return d.active; })
+                .attr('cx', function(d) { return xScale(d.x); })
+                .attr('cy', function(d) { return yScale(d.y); })
+                .attr('r', function(d){ return d.active ? 15 : 5; })
+                .attr('fill', function(d){ return colors(d.group); });
+
+              $$circles.exit()
+                .remove();
+
+              var $$targets = $dataGroup.selectAll('circle.targets')
+                .data(flatData);
+
+              $$targets.enter()
+                .append('circle')
+                .attr('class', 'targets')
+                .on('click', function(d, i){
+                  // Set all data points inactive
+                  flatData.forEach(function(d){
+                    d.active = false;
+                  });
+                  flatData[i].active = true;
+                  redraw();
+                });
+
+              $$targets
+                .attr('cx', function(d) { return xScale(d.x); })
+                .attr('cy', function(d) { return yScale(d.y); })
+                .attr('r', 9.6/2.54*9.5)
+                .attr({
+                  'opacity': 0,
+                  'fill': '#fff'
+                });
+
+              $$targets.exit()
+                .remove();
+            }
+          });
+        });
+
+        function distance(x0, x1, y0, y1, r){
+          r = r || 0;
+          return Math.sqrt(Math.pow(x0+r-x1, 2) + Math.pow(y0+r-y1, 2));
+        }
+
+        function sum(a, b) {
+          return a + b;
+        }
+
+        function countValuesOfNest(nest) {
+          return nest.map(function(d){
+            return d.values.length;
+          }).reduce(sum, 0);
+        }
+
+        function adaptResolutionOfNest(nest, resolution) {
+          return nest.map(function(d){
+            return {
+              key: d.key,
+              values: adaptResolution(d.values, resolution)
+            }
+          });
+        }
+
+        function adaptResolution(data, resolution) {
+          resolution = resolution !== undefined ? Math.max(1, Math.ceil(resolution)) : 1;
+          return data.filter(function(d, i) {
+            return i % resolution === 0;
+          });
+        }
+
+        function sortByAttr(attr) {
+          return function(a, b) {
+            return a[attr] > b[attr];
+          }
+        }
+
+        function getAttributes(elem){
+          var atts = {};
+          d3.values(elem.attributes).forEach(function(attr){
+            atts[attr.nodeName] = attr.nodeValue;
+          });
+          return atts;
+        }
+
+        function flattenNest(nest){
+          return flatten(nest.map(function(d){
+            return d.values;
+          }));
+        }
+
+        function flatten(arr) {
+          return arr.reduce(function(prev, d, i){
+            return prev.concat(d);
+          }, []);
+        }
+
+        function unique(arr) {
+          return arr.filter(function(value, index, self) {
+            return self.indexOf(value) === index;
+          });
+        }
+      }
+
+    </script>
+  </body>
+</html>

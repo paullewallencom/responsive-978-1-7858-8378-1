@@ -1,0 +1,27 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Format Numbers</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+  </head>
+  <body>
+    <script>
+      // Parsing strings to numbers
+      var i = parseInt("5.0", 10);
+      var f = parseFloat("3.8");
+
+      // Short notation
+      var s = "932.2";
+      var j = +s;
+    </script>
+
+    <script>
+      // Create a formatter
+      var formatter = d3.format('.2f');
+
+      // Format a number object to a string
+      formatter(3.12e-1);
+      // "0.31"
+    </script>
+  </body>
+</html>

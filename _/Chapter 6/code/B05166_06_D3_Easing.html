@@ -1,0 +1,67 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>D3 Easing</title>
+    <style>
+      rect {
+        stroke: black;
+        stroke-width: 1px;
+        fill: steelblue;
+      }
+
+    </style>
+    <script src="bower_components/d3/d3.min.js"></script>
+  </head>
+  <body>
+
+  <svg width="800" height="600"></svg>
+
+  <script>
+
+  var easings = [
+    'linear', 'sin',
+    'cubic', 'cubic-out', 'cubic-in-out',
+    'quad', 'quad-out', 'quad-in-out'
+  ];
+
+  var $svg = d3.select('svg');
+  var height = 600;
+  var padding = 10;
+
+  easings.forEach(function(easingType, i){
+    var $rect = $svg.append('rect');
+    var $text = $svg.append('text');
+    var h = height / easings.length - padding;
+
+    $rect
+      .attr('width', 100)
+      .attr('height', h)
+      .attr('x', 50)
+      .attr('y', h*i);
+
+    $text.text(easingType)
+      .attr('x', 50)
+      .attr('y', h*i + padding);
+
+    animate($rect, 'x', 50, 650, d3.ease(easingType));
+  });
+
+  function animate(elem, attributeName, startValue, endValue, ease) {
+    var duration = 1000;
+    var interpolate = d3.interpolateNumber(startValue, endValue);
+
+    d3.timer(function(time){
+
+      var t = ease(time/duration);
+      elem.attr(attributeName, interpolate(t));
+
+      if (t >= 1) {
+        return true;
+      }
+    });
+  }
+
+  </script>
+
+  </body>
+</html>

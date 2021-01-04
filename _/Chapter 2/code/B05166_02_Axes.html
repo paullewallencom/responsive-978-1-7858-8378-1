@@ -1,0 +1,32 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Axes</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <style>
+      path {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+      }
+    </style>
+  </head>
+  <body>
+
+    <svg width="400" height="400"></svg>
+
+    <script>
+
+      var scale = d3.scale.linear()
+        .domain([0, 10])
+        .range([20, 380]);
+
+      var axis = d3.svg.axis()
+        .scale(scale);
+
+      d3.select('svg')
+        .call(axis);
+
+    </script>
+  </body>
+</html>

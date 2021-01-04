@@ -1,0 +1,37 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>SMIL Animations</title>
+    <style>
+      rect {
+        stroke: black;
+        stroke-width: 1px;
+      }
+
+      rect:nth-of-type(1) { fill: steelblue; }
+      rect:nth-of-type(2) { fill: lightsalmon; }
+      rect:nth-of-type(3) { fill: teal; }
+
+    </style>
+  </head>
+  <body>
+
+  <svg width="800" height="600">
+    <rect x="50" y="60" width="100" height="100">
+      <animate attributeName="x" from="50" to="650" dur="1s"/>
+    </rect>
+    <text x="50" y="50">Autostart</text>
+
+    <rect x="50" y="260" width="100" height="100">
+      <animate attributeName="x" from="50" to="650" dur="1s" begin="click" />
+    </rect>
+    <text x="50" y="250">Click to start</text>
+
+    <rect x="50" y="460" width="100" height="100">
+      <animate attributeName="x" from="50" to="650" dur="1s" begin="click" fill="freeze" />
+    </rect>
+    <text x="50" y="450">Click and freeze</text>
+  </svg>
+
+  </body>
+</html>

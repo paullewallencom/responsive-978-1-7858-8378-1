@@ -1,0 +1,27 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Filters</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+  </head>
+  <body>
+    <script>
+      var data = [
+        {x: 1, y: 6},
+        {x: 2, y: undefined},
+        {x: 3, y: 4},
+        {x: 4, y: 2},
+        {x: undefined, y: 3},
+        {x: 5, y: 3},
+        {x: 6, y: 7},
+      ];
+
+      var filtered = data.filter(function(d, i){
+        return d.x !== undefined && d.y !== undefined;
+      });
+
+      console.log(filtered);
+
+    </script>
+  </body>
+</html>

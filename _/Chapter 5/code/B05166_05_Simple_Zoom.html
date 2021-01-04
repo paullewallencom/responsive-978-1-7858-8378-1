@@ -1,0 +1,246 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Simple Zoom</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <style>
+      html, body{
+        position: realtive;
+      }
+      .chart {
+        position: relative;
+      }
+      .chart svg {
+        width: 100%;
+        position: relative;
+      }
+      .chart text {
+        font-size: 0.9rem;
+      }
+        .chart path, .chart line, .chart text {
+          vector-effect: non-scaling-stroke;
+        }
+      .axis path, .axis line {
+        fill: none;
+        stroke: #999;
+        shape-rendering: crispEdges;
+      }
+      .data rect {
+        stroke: red;
+        fill: rgba(255, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h2>My Dashboard</h2>
+        <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+        <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet.</p>
+      </div>
+      <div class="col-md-8">
+        <div class="chart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-groupby='symbol'>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script>
+
+      barchart('.chart');
+
+      function barchart(selector) {
+        // Select all charts
+        var $charts = d3.selectAll(selector);
+        var aspectRatio = 4.0 / 3.0;
+
+        flatten($charts).forEach(function(chart, i){
+          var atts = getAttributes(chart);
+          var url = atts['data-url'];
+          var colors = d3.scale.category10();
+          var $svg = d3.select(chart).append('svg');
+          var $vis = $svg.append('g').attr('class', 'vis-container');
+          var $axesGroup = $vis.append('g').attr('class', 'axis-container');
+          var $dataGroup = $vis.append('g').attr('class', 'data-container');
+          var xKey = function(d){ return d.x; };
+          var yKey = function(d){ return d.y; };
+          var groupKey = function(d){ return d.group; };
+          var nest = d3.nest().key(groupKey);
+          var padding = 30;
+
+          var translate = [0,0];
+          var scale = 1;
+          var zoom = d3.behavior.zoom()
+            .on("zoom", function() {
+              translate = d3.event.translate;
+              scale = d3.event.scale;
+              $vis.attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+            });
+
+          $svg.call(zoom);
+
+          d3.csv(url, function(results){
+
+            // Clean the data
+            var flatData = results.map(function(d){
+              d.x = d[atts['data-x']];
+              d.y = parseFloat(d[atts['data-y']]);
+              d.group = d[atts['data-groupby']];
+              return d;
+            });
+
+            if (atts['data-x-filter']) {
+             flatData = flatData.filter(function(d){
+                return d.x.search(atts['data-x-filter']) >= 0;
+              });
+            }
+
+            // Transform flat data to hierarchical data
+            var nestData = nest.entries(flatData);
+
+            // Redraw the chart
+            redraw();
+
+            window.addEventListener('resize', function(event){
+              redraw();
+            });
+
+            function redraw() {
+              var width = chart.clientWidth;
+              var height = width / aspectRatio;
+              var pixelsPerData = 20;
+              var resolution = pixelsPerData * (flatData.length) / width;
+              var nestDataRes = adaptResolutionOfNest(nestData, resolution);
+              var flatDataRes = flattenNest(nestDataRes);
+              var numDataPoints = countValuesOfNest(nestDataRes);
+              var barWidth = 0.9 * (width - 2*padding) / numDataPoints;
+
+              // Set a fixed height
+              $svg.attr('height', height);
+
+              var xScale = d3.scale.ordinal()
+                .domain(flatDataRes.map(xKey))
+                .rangeBands([padding, width - 2*padding]);
+
+              var yScale = d3.scale.linear()
+                .domain([0, d3.max(flatDataRes, yKey)])
+                .range([height - 2*padding, padding]);
+
+              var xAxis = d3.svg.axis()
+                .scale(xScale)
+                .ticks(numDataPoints / nestDataRes.length);
+
+              var yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient('left');
+
+              var $$xAxis = $axesGroup.selectAll('.x.axis')
+                .data([true]);
+
+              $$xAxis.enter().append('g')
+                .attr('class', 'x axis');
+
+              $$xAxis.attr('transform', 'translate(0, ' + (height - 2*padding) + ')')
+                .call(xAxis);
+
+              var $$yAxis = $axesGroup.selectAll('.y.axis')
+                .data([true]);
+
+              $$yAxis.enter().append('g')
+                .attr('class', 'y axis');
+
+              $$yAxis.attr('transform', 'translate(' + padding + ')')
+                .call(yAxis);
+
+              nestDataRes.forEach(function(data, i){
+                var $$bars = $dataGroup.selectAll('rect.g-' + i)
+                  .data(data.values, xKey);
+
+                $$bars.enter()
+                  .append('rect')
+                  .attr('class', 'g-' + i);
+
+                $$bars
+                  .attr('x', function(d) { return xScale(d.x) + i*barWidth; })
+                  .attr('y', function(d) { return yScale(d.y); })
+                  .attr('height', function(d) { return (yScale(0) - yScale(d.y)); })
+                  .attr('width', barWidth)
+                  .attr('fill', colors(data.key));
+
+                $$bars.exit()
+                  .remove();
+              });
+            }
+          });
+        });
+
+        function sum(a, b) {
+          return a + b;
+        }
+
+        function countValuesOfNest(nest) {
+          return nest.map(function(d){
+            return d.values.length;
+          }).reduce(sum, 0);
+        }
+
+        function adaptResolutionOfNest(nest, resolution) {
+          return nest.map(function(d){
+            return {
+              key: d.key,
+              values: adaptResolution(d.values, resolution)
+            }
+          });
+        }
+
+        function adaptResolution(data, resolution) {
+          resolution = resolution !== undefined ? Math.max(1, Math.ceil(resolution)) : 1;
+          return data.filter(function(d, i) {
+            return i % resolution === 0;
+          });
+        }
+
+        function sortByAttr(attr) {
+          return function(a, b) {
+            return a[attr] > b[attr];
+          }
+        }
+
+        function getAttributes(elem){
+          var atts = {};
+          d3.values(elem.attributes).forEach(function(attr){
+            atts[attr.nodeName] = attr.nodeValue;
+          });
+          return atts;
+        }
+
+        function flattenNest(nest){
+          return flatten(nest.map(function(d){
+            return d.values;
+          }));
+        }
+
+        function flatten(arr) {
+          return arr.reduce(function(prev, d, i){
+            return prev.concat(d);
+          }, []);
+        }
+
+        function unique(arr) {
+          return arr.filter(function(value, index, self) {
+            return self.indexOf(value) === index;
+          });
+        }
+      }
+
+    </script>
+  </body>
+</html>

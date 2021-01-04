@@ -1,0 +1,31 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Manual Feature Detection</title>
+  </head>
+  <body>
+
+  <script>
+    function hasFunction(obj, feature) {
+      return feature in obj.prototype;
+    }
+
+    function isAvailable(exp) {
+      try {
+        eval(exp);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    }
+
+    console.log("Array.prototype.every available?", hasFunction(Array, 'every'));
+    console.log("Array.prototype.filter available?", hasFunction(Array, 'filter'));
+    console.log("Array.prototype.foo available?", hasFunction(Array, 'foo'));
+
+    console.log("Arrow functions available?", isAvailable('()=>{}'));
+    console.log("Keyword in available?", isAvailable('1 in [1]'));
+    console.log("Foo bar baz available?", isAvailable('foo bar baz'));
+  </script>
+  </body>
+</html>

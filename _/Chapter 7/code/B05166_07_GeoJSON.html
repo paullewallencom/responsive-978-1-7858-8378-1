@@ -1,0 +1,28 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>GeoJSON</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <script src="bower_components/topojson/topojson.js"></script>
+  </head>
+  <body>
+
+  <script>
+
+    d3.json("data/default.json", function(error, data) {
+      if (error) throw error;
+
+      var labels = data.features.map(function(d){
+        return d.properties.prop0;
+      });
+      var values = data.features.map(function(d){
+        return d.properties.prop1.count;
+      });
+
+      console.log(labels);
+      console.log(values);
+    });
+
+  </script>
+  </body>
+</html>

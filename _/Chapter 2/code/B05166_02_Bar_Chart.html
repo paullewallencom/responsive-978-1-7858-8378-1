@@ -1,0 +1,99 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Bar Chart</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+
+    <style>
+      .axis path, .axis line {
+        fill: none;
+        stroke: #999;
+        shape-rendering: crispEdges;
+      }
+      .data rect {
+        stroke: red;
+        fill: rgba(255, 0, 0, 0.5);
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <script>
+      // Define the data
+      var data = [
+        {y: 10, label: 'Milk'},
+        {y: 15, label: 'Ham'},
+        {y: 18, label: 'Beer'},
+        {y: 24, label: 'Eggs'},
+        {y: 6, label: 'Bread'}
+      ];
+
+      var $body = d3.select('body');
+
+      // Define the dimensions
+      var width = $body[0][0].clientWidth;
+      var height = width * 0.5;
+
+      // Define the padding
+      var pad = width * 0.1;
+
+      var $svg = d3.select('body')
+        .append('svg')
+        .attr({
+          width: width,
+          height: height
+        });
+
+      var $axesGroup = $svg.append('g').attr('class', 'axis');
+      var $dataGroup = $svg.append('g').attr('class', 'data');
+
+      var xKey = function(d){ return d.label; };
+      var yKey = function(d){ return d.y; };
+
+      var xScale = d3.scale.ordinal()
+        .domain(data.map(xKey))
+        .rangeRoundBands([pad, width - pad], 0.1);
+
+      var yScale = d3.scale.linear()
+        .domain([0, d3.max(data, yKey)])
+        .range([height - pad, pad]);
+
+      var xAxis = d3.svg.axis()
+        .scale(xScale)
+        .ticks(data.length);
+
+      var yAxis = d3.svg.axis()
+        .scale(yScale)
+        .orient('left');
+
+      $axesGroup.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0, ' + (height - pad) + ')')
+        .call(xAxis);
+
+      $axesGroup.append('g')
+        .attr('class', 'y axis')
+        .attr('transform', 'translate(' + pad + ')')
+        .call(yAxis);
+
+      var barWidth = (width - 2*pad) / (data.length + 1);
+
+      var $$bars = $dataGroup.selectAll('rect')
+        .data(data, xKey);
+
+      $$bars.enter()
+        .append('rect');
+
+      $$bars
+        .attr('x', function(d) { return xScale(d.label); })
+        .attr('y', function(d) { return yScale(d.y); })
+        .attr('height', function(d) { return yScale(0) - yScale(d.y); })
+        .attr('width', barWidth);
+
+      $$bars.exit()
+        .remove();
+
+    </script>
+  </body>
+</html>

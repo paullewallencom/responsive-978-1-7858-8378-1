@@ -1,0 +1,62 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Selection</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+
+    <style>
+      .strike-through {
+        text-decoration: line-through;
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <ul>
+      <li>Ham</li>
+      <li>Cheese</li>
+      <li>Butter</li>
+      <li>Bread</li>
+    </ul>
+
+    <!-- Selection -->
+    <script>
+      var $ul = d3.select('ul');
+      var $li = d3.selectAll('li');
+    </script>
+
+    <!-- Append -->
+    <script>
+      // without function chaining
+      var $el1 = $ul.append('li');
+      $el1.text('Milk');
+
+      // with function chaining
+      $ul.append('li').text('Milk');
+    </script>
+
+    <!-- Insert -->
+    <script>
+      // without function chaining
+      var $el2 = $ul.insert('li', ':last-child');
+      $el2.text('Beer');
+
+      // with function chaining
+      $ul.insert('li', ':last-child').text('Beer');
+    </script>
+
+    <!-- Remove -->
+    <script>
+      $ul.select(':first-child')
+        .remove();
+    </script>
+
+    <!-- Attribute -->
+    <script>
+      $ul.select(':first-child')
+        .attr('class', 'strike-through');
+    </script>
+
+  </body>
+</html>

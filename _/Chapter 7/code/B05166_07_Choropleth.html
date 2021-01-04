@@ -1,0 +1,76 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Choropleth</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <script src="bower_components/topojson/topojson.js"></script>
+    <script src="bower_components/queue-async/queue.min.js"></script>
+    <style>
+      .counties {
+        fill: none;
+      }
+
+      .states {
+        fill: none;
+        stroke: #fff;
+        stroke-linejoin: round;
+      }
+    </style>
+  </head>
+  <body>
+
+  <script>
+
+    var padding = 10,
+        body = d3.select("body"),
+        width = body.node().clientWidth - padding,
+        aspectRatio = 16.0 / 9.0,
+        height = width / aspectRatio;
+
+    var color = d3.scale.linear()
+        .domain([0, .15])
+        .interpolate(d3.interpolateRgb)
+        .range(["#FF7948","#B93200"]);
+
+    var projection = d3.geo.albersUsa()
+        .scale(width)
+        .translate([width / 2, height / 2]);
+
+    var path = d3.geo.path()
+        .projection(projection);
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    queue()
+        .defer(d3.json, "data/us.json")
+        .defer(d3.csv, "data/unemployment.csv")
+        .await(ready);
+
+    function ready(error, us, unemployment) {
+      if (error) throw error;
+
+      var data = {};
+
+      unemployment.forEach(function(d){
+        data[d.id] = +d.rate;
+      });
+
+      svg.append("g")
+          .attr("class", "counties")
+        .selectAll("path")
+          .data(topojson.feature(us, us.objects.counties).features)
+        .enter().append("path")
+          .attr("fill", function(d) { return color(data[d.id]); })
+          .attr("d", path);
+
+      svg.append("path")
+          .datum(topojson.mesh(us, us.objects.states))
+          .attr("class", "states")
+          .attr("d", path);
+    }
+
+  </script>
+  </body>
+</html>

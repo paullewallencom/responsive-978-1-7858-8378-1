@@ -1,0 +1,69 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Scales</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+  </head>
+  <body>
+
+    <h1>Linear Scales</h1>
+    <script>
+
+      var scale = d3.scale.linear()
+        .domain([0, 52])
+        .range([20, 460]);
+
+      console.log([0, 3, 9, 24, 45, 52].map(scale))
+      // [20, 45.38461538461539, 96.15384615384615, 223.0769230769231, 400.7692307692308, 460]
+
+    </script>
+
+    <h1>Ordinal Scales</h1>
+    <script>
+
+      var data = ['Bread', 'Eggs', 'Milk', 'Beer'];
+
+      var scale = d3.scale.ordinal()
+        .domain(data)
+        .range([0, 1, 2, 3]);
+
+      console.log(data.map(scale))
+      // [0, 1, 2, 3]
+
+
+      var scale = d3.scale.ordinal()
+        .domain(data)
+        .rangePoints([0, 10]);
+
+      console.log(data.map(scale))
+      // [0, 3.3333333333333335, 6.666666666666667, 10]
+
+      var scale = d3.scale.ordinal()
+        .domain(data)
+        .rangeBands([0, 10]);
+
+      console.log(data.map(scale))
+      // [0, 2.5, 5, 7.5]
+
+    </script>
+
+    <h1>Time Scales</h1>
+    <script>
+
+      var data = [
+        new Date(2015, 8, 1),
+        new Date(2015, 8, 2),
+        new Date(2015, 8, 3),
+        new Date(2015, 8, 4)
+      ];
+
+      var scale = d3.time.scale()
+        .domain(d3.extent(data))
+        .range([20, 460]);
+
+      console.log(data.map(scale))
+      // [20, 166.66666666666666, 313.3333333333333, 460]
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,174 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Load Data</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <style>
+      html, body{
+        position: realtive;
+      }
+      .chart {
+        height: 300px;
+        position: relative;
+      }
+      .chart svg {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      .chart text {
+        font-size: 11px;
+      }
+      .chart path, .chart line, .chart text {
+        vector-effect: non-scaling-stroke;
+      }
+      .axis path, .axis line {
+        fill: none;
+        stroke: #999;
+        shape-rendering: crispEdges;
+      }
+      .data rect {
+        stroke: red;
+        fill: rgba(255, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+
+      <div class="chart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-x-filter='2010'
+           data-groupby='symbol'>
+      </div>
+      <div class="chart"
+           data-url="https://gist.githubusercontent.com/mbostock/1256572/raw/b018387fd4eb723bce700432072507749c131cc0/stocks.csv"
+           data-x='date'
+           data-y='price'
+           data-x-filter='2009'
+           data-groupby='symbol'>
+      </div>
+
+    <script>
+
+      barchart('.chart');
+
+      function barchart(selector) {
+        // Select all charts
+        var $charts = d3.selectAll(selector);
+        var width = 800;
+        var aspectRatio = 4.0 / 3.0;
+        var height = width / aspectRatio;
+
+        flatten($charts).forEach(function(chart, i){
+          var atts = getAttributes(chart);
+          var url = atts['data-url'];
+          var colors = d3.scale.category10();
+          var $svg = d3.select(chart).append('svg')
+            .attr('viewBox', '0 0 ' + width + ' ' + height)
+            .attr('preserveAspectRatio', 'xMidYMid');
+
+          var $axesGroup = $svg.append('g').attr('class', 'axis-container');
+          var $dataGroup = $svg.append('g').attr('class', 'data-container');
+          var xKey = function(d){ return d.x; };
+          var yKey = function(d){ return d.y; };
+          var groupKey = function(d){ return d.group; };
+          var nest = d3.nest().key(groupKey);
+          var padding = 30;
+
+          d3.csv(url, function(results){
+
+            // Clean the data
+            var flatData = results.map(function(d){
+              d.x = d[atts['data-x']];
+              d.y = parseFloat(d[atts['data-y']]);
+              d.group = d[atts['data-groupby']];
+              return d;
+            });
+
+            if (atts['data-x-filter']) {
+             flatData = flatData.filter(function(d){
+                return d.x.search(atts['data-x-filter']) >= 0;
+              });
+            }
+
+            var xScale = d3.scale.ordinal()
+              .domain(flatData.map(xKey))
+              .rangeBands([padding, width - 2*padding]);
+
+            var yScale = d3.scale.linear()
+              .domain([0, d3.max(flatData, yKey)])
+              .range([height - 2*padding, padding]);
+
+            var xAxis = d3.svg.axis()
+              .scale(xScale)
+              .ticks(flatData.length);
+
+            var yAxis = d3.svg.axis()
+              .scale(yScale)
+              .orient('left');
+
+            $axesGroup.append('g')
+              .attr('class', 'x axis')
+              .attr('transform', 'translate(0, ' + (height - 2*padding) + ')')
+              .call(xAxis);
+
+            $axesGroup.append('g')
+              .attr('class', 'y axis')
+              .attr('transform', 'translate(' + padding + ')')
+              .call(yAxis);
+
+            var barWidth = (1 - 0.2) * (width - 2*padding) / (flatData.length);
+
+            nest.entries(flatData).forEach(function(data, i){
+              var $$bars = $dataGroup.selectAll('rect.g-' + i)
+                .data(data.values, xKey);
+
+              $$bars.enter()
+                .append('rect')
+                .attr('class', 'g-' + i);
+
+              $$bars
+                .attr('x', function(d) { return xScale(d.x) + i*barWidth; })
+                .attr('y', function(d) { return yScale(d.y); })
+                .attr('height', function(d) { return (yScale(0) - yScale(d.y)); })
+                .attr('width', barWidth)
+                .attr('fill', colors(data.key));
+
+              $$bars.exit()
+                .remove();
+            });
+          });
+        });
+
+        function sortByAttr(attr) {
+          return function(a, b) {
+            return a[attr] > b[attr];
+          }
+        }
+
+        function getAttributes(elem){
+          var atts = {};
+          d3.values(elem.attributes).forEach(function(attr){
+            atts[attr.nodeName] = attr.nodeValue;
+          });
+          return atts;
+        }
+
+        function flatten(arr) {
+          return arr.reduce(function(prev, d, i){
+            return prev.concat(d);
+          }, []);
+        }
+
+        function unique(arr) {
+          return arr.filter(function(value, index, self) {
+            return self.indexOf(value) === index;
+          });
+        }
+      }
+
+    </script>
+  </body>
+</html>

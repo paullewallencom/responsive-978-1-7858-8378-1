@@ -1,0 +1,40 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Selection SVG</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+
+    <style>
+      svg {
+        border: 1px dashed black;
+        background-color: #efefef;
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <svg width="800" height="400">
+
+    </svg>
+
+    <!-- Selection -->
+    <script>
+      // Select the SVG element
+      var $svg = d3.select('svg');
+    </script>
+
+    <!-- Append and attribute -->
+    <script>
+      // Append a new circle element
+      $svg.append('circle')
+        .attr({
+          cx: 75,
+          cy: 75,
+          r: 50,
+          fill: 'red'
+        });
+    </script>
+
+  </body>
+</html>

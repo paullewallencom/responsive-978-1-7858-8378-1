@@ -1,0 +1,115 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Group Data</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+    <style>
+      .axis path, .axis line {
+        fill: none;
+        stroke: #999;
+        shape-rendering: crispEdges;
+      }
+      .data rect {
+        stroke: red;
+        fill: rgba(255, 0, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // data source: Mike Bostock
+      var url = 'https://gist.githubusercontent.com/mbostock/3020685/raw/b4e8ed2c55a2e09cb34ccfc419082c77fa6bbfcf/data.csv';
+
+      function sum(a, b){
+        return a + b;
+      }
+
+      d3.csv(url, function(data){
+        console.log(data);
+        var nest = d3.nest()
+          .key(function(d, i){
+            return d.date;
+          });
+
+        console.log(nest.entries(data));
+
+        draw(nest.entries(data).map(function(d){
+          return {
+            date: d.key,
+            value: d3.sum(d.values, function(d){
+              return +d.value;
+            })
+          }
+        }));
+      });
+
+      var $body = d3.select('body');
+
+      // Define the dimensions
+      var width = $body[0][0].clientWidth;
+      var height = width * 0.5;
+
+      // Define the padding
+      var pad = width * 0.1;
+
+      var $svg = d3.select('body')
+        .append('svg')
+        .attr({
+          width: width,
+          height: height
+        });
+
+      var $axesGroup = $svg.append('g').attr('class', 'axis');
+      var $dataGroup = $svg.append('g').attr('class', 'data');
+
+      function draw(data) {
+        var xKey = function(d){ return d.date; };
+        var yKey = function(d){ return d.value; };
+
+        var xScale = d3.scale.ordinal()
+          .domain(data.map(xKey))
+          .rangeRoundBands([pad, width - pad], 0.1);
+
+        var yScale = d3.scale.linear()
+          .domain([0, d3.max(data, yKey)])
+          .range([height - pad, pad]);
+
+        var xAxis = d3.svg.axis()
+          .scale(xScale)
+          .ticks(data.length);
+
+        var yAxis = d3.svg.axis()
+          .scale(yScale)
+          .orient('left');
+
+        $axesGroup.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0, ' + (height - pad) + ')')
+          .call(xAxis);
+
+        $axesGroup.append('g')
+          .attr('class', 'y axis')
+          .attr('transform', 'translate(' + pad + ')')
+          .call(yAxis);
+
+        var barWidth = (width - 2*pad) / (data.length + 1);
+
+        var $$bars = $dataGroup.selectAll('rect')
+          .data(data, xKey);
+
+        $$bars.enter()
+          .append('rect');
+
+        $$bars
+          .attr('x', function(d) { return xScale(d.date); })
+          .attr('y', function(d) { return yScale(d.value); })
+          .attr('height', function(d) { return yScale(0) - yScale(d.value); })
+          .attr('width', barWidth);
+
+        $$bars.exit()
+          .remove();
+      }
+
+    </script>
+  </body>
+</html>

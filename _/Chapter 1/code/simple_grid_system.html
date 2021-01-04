@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Grid System</title>
+
+    <style>
+    /* Fluid Grid System */
+    .row {
+      position: relative;
+      width: 100%;
+    }
+    .row:after {
+      content: " ";
+      display: block;
+      clear: both;
+    }
+    .row, [class*="col-"] {
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+    [class*="col-"] {
+      float: left;
+      padding: 1em;
+    }
+    .col-1 {
+      width: 8.33333333%;
+    }
+    .col-2 {
+      width: 16.66666667%;
+    }
+    .col-3 {
+      width: 25%;
+    }
+    .col-4 {
+      width: 33.33333333%;
+    }
+    .col-5 {
+      width: 41.66666667%;
+    }
+    .col-6 {
+      width: 50%;
+    }
+    .col-7 {
+      width: 58.33333333%;
+    }
+    .col-8 {
+      width: 66.66666667%;
+    }
+    .col-9 {
+      width: 75%;
+    }
+    .col-10 {
+      width: 83.33333333%;
+    }
+    .col-11 {
+      width: 91.66666667%;
+    }
+    .col-12 {
+      width: 100%;
+    }
+
+    /* Some Styling */
+    html, body {
+      margin: 10;
+      padding: 10;
+    }
+    [class*="col-"] {
+      min-height: 3em;
+      text-align: center;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+    .col-1, .col-6 {
+      background-color: #6537A3;
+    }
+    .col-2, .col-12 {
+      background-color: #F09242;
+    }
+    .col-3 {
+      background-color: #298C91;
+    }
+    .col-4 {
+      background-color: #F0E042;
+    }
+    </style>
+
+  </head>
+  <body>
+    <div class="row">
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+      <div class="col-1">.col-1</div>
+    </div>
+    <div class="row">
+      <div class="col-2">.col-2</div>
+      <div class="col-2">.col-2</div>
+      <div class="col-2">.col-2</div>
+      <div class="col-2">.col-2</div>
+      <div class="col-2">.col-2</div>
+      <div class="col-2">.col-2</div>
+    </div>
+    <div class="row">
+      <div class="col-3">.col-3</div>
+      <div class="col-3">.col-3</div>
+      <div class="col-3">.col-3</div>
+      <div class="col-3">.col-3</div>
+    </div>
+    <div class="row">
+      <div class="col-4">.col-4</div>
+      <div class="col-4">.col-4</div>
+      <div class="col-4">.col-4</div>
+    </div>
+    <div class="row">
+      <div class="col-6">.col-6</div>
+      <div class="col-6">.col-6</div>
+    </div>
+    <div class="row">
+      <div class="col-12">.col-12</div>
+    </div>
+  </body>
+</html>

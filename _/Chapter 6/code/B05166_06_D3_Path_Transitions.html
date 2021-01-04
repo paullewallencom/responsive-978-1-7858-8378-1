@@ -1,0 +1,52 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>D3 Path Transitions</title>
+    <style>
+      path {
+        stroke: black;
+        stroke-width: 1px;
+        fill: steelblue;
+      }
+    </style>
+    <script src="bower_components/d3/d3.min.js"></script>
+  </head>
+  <body>
+
+  <svg width="800" height="600">
+    <path class="area" />
+  </svg>
+
+  <script>
+
+  var $path = d3.select('.area');
+  var points = [
+    [0,0], [100, 10], [200, 250],
+    [300, 375], [400, 340], [500, 135],
+    [600, 360], [700, 280], [800, 480]
+  ];
+
+  var area0 = d3.svg.area()
+    .y0(600)
+    .y1(600)
+    .x(function(d) { return d[0]; })
+    .tension(1.0)
+    .interpolate('cardinal');
+
+  var area1 = d3.svg.area()
+    .y0(600)
+    .y1(function(d) { return 600 - d[1]; })
+    .x(function(d) { return d[0]; })
+    .interpolate('cardinal')
+    .tension(0.6);
+
+  $path.datum(points)
+    .attr('d', area0)
+    .transition()
+    .duration(1000)
+    .attr('d', area1);
+
+  </script>
+
+  </body>
+</html>

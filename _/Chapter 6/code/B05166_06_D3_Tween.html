@@ -1,0 +1,50 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>D3 Tween</title>
+    <style>
+      text {
+        font-size: 2em;
+        font-family: 'Courier New', Arial;
+      }
+
+    </style>
+    <script src="bower_components/d3/d3.min.js"></script>
+  </head>
+  <body>
+
+  <svg width="800" height="600">
+    <text x="10" y="50"></text>
+  </svg>
+
+  <script>
+
+  var textTween = function(value){
+    var l = value.length;
+    var randomString = function(length) {
+      if (length === 0) {
+        return "";
+      }
+      // generates a random string
+      // @src: http://stackoverflow.com/a/10727155
+      return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+    }
+    return function() {
+      return function(t) {
+        var i = Math.floor(t * l);
+        var s = value.substr(0, i) + randomString(l - i);
+        this.textContent = s;
+      }
+    };
+  }
+
+  d3.select('text')
+    .transition()
+    .duration(2500)
+    .ease('linear')
+    .tween('text', textTween('Welcome to the matrix...'));
+
+  </script>
+
+  </body>
+</html>

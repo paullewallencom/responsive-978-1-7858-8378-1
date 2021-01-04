@@ -1,0 +1,16 @@
+{
+  "minify": true,
+  "options": [
+    "setClasses"
+  ],
+  "feature-detects": [
+    "test/canvas",
+    "test/svg",
+    "test/svg/asimg",
+    "test/svg/clippaths",
+    "test/svg/filters",
+    "test/svg/foreignobject",
+    "test/svg/inline",
+    "test/svg/smil"
+  ]
+}

@@ -1,0 +1,86 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>Data Binding</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+
+    <style>
+      svg {
+        border: 1px dashed black;
+        background-color: #efefef;
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <h1>Explicit for loop</h1>
+    <svg id="ex01" width="800" height="400">
+
+    </svg>
+
+    <script>
+      var $svg = d3.select('#ex01');
+
+      // Explicit for loop
+      for (var i=0;i<5;i++){
+        $svg.append('circle')
+          .attr({
+            cx: 125 * (i + 1),
+            cy: 75,
+            r: 50,
+            fill: 'red'
+          });
+      }
+    </script>
+
+    <h1>Explicit forEach loop</h1>
+    <svg id="ex02" width="800" height="400">
+
+    </svg>
+
+    <script>
+      var $svg = d3.select('#ex02');
+
+      // Create a pseudo dataset
+      var data = d3.range(5);
+
+      // Explicit forEach loop
+      data.forEach(function(d, i){
+        $svg.append('circle')
+          .attr({
+            cx: 125 * (d + 1),
+            cy: 75,
+            r: 50,
+            fill: 'red'
+          });
+      });
+
+      </script>
+
+      <h1>Data-driven approach</h1>
+      <svg id="ex03" width="800" height="400">
+
+      </svg>
+
+      <script>
+      var $svg = d3.select('#ex03');
+
+      // Create a pseudo dataset
+      var data = d3.range(5);
+
+      // Data-driven approach
+      $svg.selectAll('circle')
+        .data(data)
+        .enter()
+        .append('circle')
+        .attr({
+            cy: 75,
+            r: 50,
+            fill: 'red'
+          })
+        .attr('cx', function(d, i) { return 125 * (d + 1) });
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype HTML>
+<html>
+  <head>
+    <title>SVG Area</title>
+    <script src="bower_components/d3/d3.min.js"></script>
+
+    <style>
+      svg {
+        border: 1px dashed black;
+        background-color: #efefef;
+      }
+      path {
+        fill: rgba(255, 0, 0, 0.3);
+        stroke: red;
+        stroke-width: 2;
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <h1>Arc</h1>
+    <svg id="ex01" width="800" height="400">
+
+    </svg>
+
+    <script>
+      var $svg = d3.select('#ex01');
+
+      var arc = d3.svg.arc()
+        .innerRadius(40)
+        .outerRadius(100)
+        .startAngle(0)
+        .endAngle(Math.PI);
+
+      $svg.append("path")
+        .attr("d", arc)
+        .attr("transform", "translate(200, 200)");
+    </script>
+  </body>
+</html>
